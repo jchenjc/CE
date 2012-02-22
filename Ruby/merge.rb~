@@ -1,0 +1,62 @@
+def merge(arr_1, arr_2)
+  arr3 = []
+  arr1 = arr_1
+  arr2 = arr_2
+  while !arr1.empty?
+    temp = arr2[0]
+    if !temp
+      arr3.concat(arr1)
+      return arr3
+    end
+    if temp > arr1[0]
+      arr3 << arr1.shift
+    else
+      arr3 << arr2.shift
+    end
+  end
+  
+  arr3.concat(arr2) if !arr2.empty?
+  arr3
+end
+
+def merge_2(arr1, arr2)
+  arr3 = []
+  pt1 = 0
+  pt2 = 0
+  return arr1 if arr2.empty?
+  return arr2 if arr1.empty?
+  temp = arr2[pt2]
+  while !arr1[pt1].nil?
+    if !temp
+      arr3.concat(arr1[pt1..-1])
+      return arr3
+    end
+    if temp > arr1[pt1]
+      arr3 << arr1[pt1]
+      pt1 += 1
+    else
+      arr3 << temp
+      pt2 += 1
+      temp = arr2[pt2]
+    end
+  end
+  
+  arr3.concat(arr2[pt2..-1]) unless arr2.empty?
+  arr3
+end
+
+a = [1,3,5,7,9]
+b = [2,4,6,8,10]
+
+c = merge(a,b)
+p c
+puts "a is #{a}"
+puts "b is #{b}"
+
+d = [1,3,5,7,9]
+e = [2,4,6,8,10]
+puts "d is #{d}"
+puts "e is #{e}"
+
+f = merge_2(d, e)
+p f
