@@ -1,0 +1,69 @@
+def cluster(dataArray, threshHold)
+  results = []
+  dataLen = dataArray.length
+  return dataArray if dataLen <= 1
+  
+  centroidIdx = generate_centroid_idx(0, dataLen - 1)
+  leftBound, rightBound = 0, dataLen - 1
+  currBucket, newLeftBound, newRightBound = group_neighbors(dataArray, centroidIdx, leftBound, rightBound, threshHold)
+  
+  puts "currbucket is #{currBucket}, newleftbound is #{newLeftBound}, newrightbound is #{newRightBound}"
+  
+  leftDataArray = dataArray[leftBound..newLeftBound]
+  leftSubCluster = leftDataArray.empty? ? [] : cluster(leftDataArray, threshHold) 
+  puts "leftsubcluster #{leftSubCluster.inspect}"
+  results << leftSubCluster.shift until leftSubCluster.empty?
+  
+  results << currBucket
+  
+  
+  puts "newLeftBound #{newLeftBound} " + " newRightBound #{newRightBound}" 
+  
+  rightDataArray = dataArray[newRightBound..rightBound]
+  rightSubCluster = rightDataArray.empty? ? [] : cluster(rightDataArray, threshHold)
+  puts "rightsubcluster #{rightSubCluster.inspect}"
+  results << rightSubCluster.shift until rightSubCluster.empty?
+  
+  
+  results
+end
+
+def group_neighbors(dataArray, centroidIdx, leftBound, rightBound, threshHold)
+  currGroup = [ dataArray[centroidIdx] ]
+  leftIdx, rightIdx = centroidIdx - 1, centroidIdx + 1
+  
+  while leftIdx >= leftBound 
+    similar = similar?(dataArray[leftIdx], currGroup.first, threshHold)
+    break if !similar
+    currGroup.unshift(dataArray[leftIdx])
+    leftIdx -= 1
+  end
+  
+  while rightIdx <= rightBound
+    similar = similar?(currGroup.last, dataArray[rightIdx], threshHold)
+    break if !similar
+    currGroup << dataArray[rightIdx]
+    rightIdx += 1  
+  end
+  
+  [currGroup, leftIdx, rightIdx]
+end
+
+def similar?(small, large, threshHold)
+  return true if (large - small) <= threshHold
+end
+
+def generate_centroid_idx(low, max)
+  prng = Random.new
+  prng.rand(low..max)
+end
+
+#a = generate_buckets_loc(10)
+#puts a.inspect
+
+dataArray = [392, 396, 400, 406, 422, 436, 446, 448, 450, 454, 462, 470, 478, 488, 490, 508, 512, 518, 526, 528, 532, 538, 548, 562, 570, 580, 592, 594, 596, 598, 600, 604, 608, 614, 620, 626, 632, 640]
+
+testArray = [5, 15, 16, 18, 19, 25, 35, 60]
+#puts group_neighbors(testArray, 2, 0, 7, 5).inspect 
+
+puts cluster(testArray, 5).inspect
